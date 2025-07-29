@@ -18,6 +18,19 @@ class AESHelper
 
         return base64_encode($encrypted);
     }
+    // public static function encrypt($text, $key, $iv = "0123456789abcdef")
+    // {
+    //     $encrypted = openssl_encrypt(
+    //         $text,
+    //         "AES-256-CBC",
+    //         base64_decode($key),
+    //         OPENSSL_RAW_DATA, // Use built-in padding
+    //         $iv
+    //     );
+
+    //     return base64_encode($encrypted);
+    // }
+
 
     public static function decrypt($encryptedText, $key, $iv = "0123456789abcdef")
     {

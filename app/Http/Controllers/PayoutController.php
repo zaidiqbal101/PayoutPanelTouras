@@ -9,6 +9,7 @@ class PayoutController extends Controller
 {
     public function send(Request $request)
     {
+        
         $key = env('AES_SECRET'); // base64-encoded
         $iv = "0123456789abcdef";
         $url = "https://neodev2.touras.in/agWalletAPI/v2/agg";
@@ -36,8 +37,8 @@ class PayoutController extends Controller
         // dd($encryptedPayload);
         // Final request body
         $requestJson = [
-            'agId' => 'AGG00001002',
-            'uId' => 'CUST001001',
+            'agId' => 'AGG6210019097',
+            'uId' => 'AGEN4430031130',
             'payload' => $encryptedPayload
         ];
 
