@@ -1,0 +1,16 @@
+{
+  "sidebar": [
+    {
+      "name": "Get Load Money List",
+      "route": "/SendPayout",
+      "icon": "fa-money-bill",
+      "active": false
+    },
+    {
+      "name": "Touras Payout",
+      "route": "/TourasPayout",
+      "icon": "fa-credit-card",
+      "active": false
+    }
+  ]
+}
