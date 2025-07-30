@@ -110,10 +110,10 @@ const TourasPayout = () => {
   const renderResponse = () => (
     response && (
       <div className="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Response</h3>
+        {/* <h3 className="text-lg font-semibold text-gray-800 mb-3">Response</h3>
         <pre className="text-sm text-gray-700 bg-white p-4 rounded-md overflow-auto max-h-64">
           {JSON.stringify(response, null, 2)}
-        </pre>
+        </pre> */}
       </div>
     )
   );
@@ -239,8 +239,29 @@ const TourasPayout = () => {
               >
                 {isSubmitting ? 'Submitting...' : 'Get Beneficiary List'}
               </button>
+
+              {/* 👇 Display bene list if available */}
+              {response?.response_raw?.beneList && (
+                <div className="mt-6">
+                  <h3 className="text-md font-bold text-gray-800 mb-2">Beneficiary List</h3>
+                  <ul className="space-y-2 max-h-64 overflow-y-auto">
+                    {response.response_raw.beneList.map((bene, index) => (
+                      <li key={bene.beneId || index} className="bg-gray-100 p-4 rounded shadow">
+                        <p><strong>Name:</strong> {bene.name}</p>
+                        <p><strong>Account No:</strong> {bene.accountNo}</p>
+                        <p><strong>IFSC:</strong> {bene.ifscCode}</p>
+                        <p><strong>Mobile:</strong> {bene.mobileNo}</p>
+                        <p><strong>Email:</strong> {bene.emailId}</p>
+                        <p><strong>Status:</strong> {bene.beneStatus}</p>
+                        <p><strong>Added On:</strong> {bene.CreationDate}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </form>
           )}
+
 
           {/* Payout without Beneficiary Form */}
           {activeTab === 'payoutWithoutBene' && (
