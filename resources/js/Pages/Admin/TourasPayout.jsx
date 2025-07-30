@@ -24,7 +24,7 @@ const TourasPayout = () => {
     },
     payoutWithBene: {
       operatingSystem: 'WEB',
-      sessionId: 'AGEN5500134316',
+      sessionId: 'AGEN4430031130',
       version: '1.0.0',
       mobileNo: '',
       txnAmount: '',
@@ -155,6 +155,8 @@ const TourasPayout = () => {
                   <p><strong>IFSC:</strong> {bene.ifscCode}</p>
                   <p><strong>Mobile:</strong> {bene.mobileNo}</p>
                   <p><strong>Email:</strong> {bene.emailId}</p>
+                  <p><strong>BeneId:</strong> {bene.beneId}</p>
+                  <p><strong>Id:</strong> {bene.id}</p>
                   <p><strong>Status:</strong> {bene.beneStatus}</p>
                   <p><strong>Added On:</strong> {bene.CreationDate}</p>
                 </li>
@@ -334,13 +336,13 @@ const TourasPayout = () => {
             </form>
           )}
 
-          <button
+          {/* <button
             type="button"
             onClick={() => router.visit('/payout/decrypt')}
             className="w-full mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             Go to Decrypt Payload Page
-          </button>
+          </button> */}
 
           {/* Render API response based on active tab */}
           {renderResponse()}
