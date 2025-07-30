@@ -38,11 +38,6 @@ const TourasPayout = () => {
       sessionId: 'AGEN4430031130',
       version: '',
       id: '',
-      // tranCode: 0,
-      // txnAmt: 0.0,
-      // surChargeAmount: 0.0,
-      // txnCode: 0,
-      // userType: 0,
     },
     payoutWithoutBene: {
       operatingSystem: 'WEB',
@@ -62,13 +57,14 @@ const TourasPayout = () => {
       count: 0,
     },
   });
-  // const [response, setResponse] = useState(null);
+
   const [responses, setResponses] = useState({
     addBeneficiary: null,
     payoutWithBene: null,
     getBeneList: null,
     payoutWithoutBene: null,
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e, section) => {
@@ -85,17 +81,26 @@ const TourasPayout = () => {
 
     try {
       const res = await axios.post(`/touras/${endpoint}`, form[section]);
+
       if (res.data.error) {
-          setResponse({ error: res.data.error });
-        } else {
-          setResponse({
+        setResponses((prev) => ({
+          ...prev,
+          [section]: { error: res.data.error },
+        }));
+      } else {
+        setResponses((prev) => ({
+          ...prev,
+          [section]: {
             raw: res.data.response_raw,
             json: res.data.response_json,
-          });
-        }
-
+          },
+        }));
+      }
     } catch (error) {
-      setResponse({ error: error.message });
+      setResponses((prev) => ({
+        ...prev,
+        [section]: { error: error.message },
+      }));
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +126,7 @@ const TourasPayout = () => {
     </div>
   );
 
-    const renderResponse = () => {
+  const renderResponse = () => {
     const response = responses[activeTab];
     if (!response) return null;
 
@@ -167,11 +172,6 @@ const TourasPayout = () => {
       </div>
     );
   };
-
-
-
-
-
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -294,30 +294,8 @@ const TourasPayout = () => {
               >
                 {isSubmitting ? 'Submitting...' : 'Get Beneficiary List'}
               </button>
-
-              {/* 👇 Display bene list if available */}
-              {responses.getBeneList?.response_raw?.beneList && (
-                <div className="mt-6">
-                  <h3 className="text-md font-bold text-gray-800 mb-2">Beneficiary List</h3>
-                  <ul className="space-y-2 max-h-64 overflow-y-auto">
-                    {responses.getBeneList.response_raw.beneList.map((bene, index) => (
-                      <li key={bene.beneId || index} className="bg-gray-100 p-4 rounded shadow">
-                        <p><strong>Name:</strong> {bene.name}</p>
-                        <p><strong>Account No:</strong> {bene.accountNo}</p>
-                        <p><strong>IFSC:</strong> {bene.ifscCode}</p>
-                        <p><strong>Mobile:</strong> {bene.mobileNo}</p>
-                        <p><strong>Email:</strong> {bene.emailId}</p>
-                        <p><strong>Status:</strong> {bene.beneStatus}</p>
-                        <p><strong>Added On:</strong> {bene.CreationDate}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
             </form>
           )}
-
 
           {/* Payout without Beneficiary Form */}
           {activeTab === 'payoutWithoutBene' && (
@@ -364,6 +342,7 @@ const TourasPayout = () => {
             Go to Decrypt Payload Page
           </button>
 
+          {/* Render API response based on active tab */}
           {renderResponse()}
         </div>
       </div>

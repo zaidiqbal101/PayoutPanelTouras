@@ -90,7 +90,7 @@ class TourasPayoutController extends Controller
         return response()->json([
             'status' => 'sent',
             'response_raw' => $response,
-            'response_json' => $responseData,
+            'response_json' => $response,
         ]);
     }
 
