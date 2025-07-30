@@ -233,7 +233,7 @@ class TourasPayoutController extends Controller
         $payloadData = [
             'header' => [
                 'operatingSystem' => $request->operatingSystem ?? 'WEB',
-                'sessionId' => $request->sessionId ?? 'AGEN5500134316',
+                'sessionId' => $request->sessionId ?? 'AGEN4430031130',
                 'version' => $request->version ?? '1.0.0',
             ],
             'userInfo' => [],
@@ -242,7 +242,7 @@ class TourasPayoutController extends Controller
                 'requestSubType' => 'PWTB',
                 'tranCode' => (int)($request->tranCode ?? 0),
                 'txnAmt' => (float)($request->txnAmt ?? 0.0),
-                'id' => $request->id ?? 'AGEN5500134316',
+                'id' => $request->id ?? 'AGEN4430031130',
                 'surChargeAmount' => (float)($request->surChargeAmount ?? 0.0),
                 'txnCode' => (int)($request->txnCode ?? 0),
                 'userType' => (int)($request->userType ?? 0),
@@ -261,38 +261,44 @@ class TourasPayoutController extends Controller
                 'count' => (int)($request->count ?? 0),
             ],
         ];
+        $key = 'b5QH4QP9rACLYLs0x+4DWnod27LmdD9V453AGVKCMOg=';
 
         $nonEncryptedPayload = json_encode($payloadData);
-        $encryptedPayload = AESHelper::encrypt($nonEncryptedPayload, $this->key, $this->iv);
+        $encryptedPayload = AESHelper::encrypt($nonEncryptedPayload, $key);
+        // dd($encryptedPayload);
 
         Log::info('Payout Without Beneficiary Encrypted Payload:', ['payload' => $encryptedPayload]);
 
         $requestJson = [
             'payload' => $encryptedPayload,
-            'uId' => $request->id ?? 'AGEN5500134316',
-            'iv' => base64_encode($this->iv),
+            'uId' => $request->id ?? 'AGEN4430031130',
+            // 'iv' => base64_encode($this->iv),
         ];
 
         $response = $this->makeCurlRequest($url, $requestJson);
+        // dd($response);
 
         if (isset($response['error'])) {
             Log::error('cURL Error in payoutWithoutBene:', ['error' => $response['error']]);
             return response()->json(['error' => $response['error']], 500);
         }
 
-        $responseData = json_decode($response, true);
+        // $responseData = json_decode($response, true);
 
-        if ($responseData && isset($responseData['responseData'])) {
-            $decryptedResponse = AESHelper::decrypt($responseData['responseData'], $this->key, $this->iv);
-            $responseData['decrypted_response'] = $decryptedResponse === "Error" ? null : $decryptedResponse;
-            Log::info('Payout Without Beneficiary Decrypted Response:', ['decrypted_response' => $responseData['decrypted_response']]);
+        if ($response) {
+            $decryptedResponse = AESHelper::decrypt($response['payload'], $key);
+            $array = json_decode($decryptedResponse, true); 
+            // dd($array);
+            // $responseData['decrypted_response'] = $decryptedResponse === "Error" ? null : $decryptedResponse;
+            // Log::info('Payout Without Beneficiary Decrypted Response:', ['decrypted_response' => $responseData['decrypted_response']]);
+            return response()->json([
+            'status' => 'sent',
+            'response_raw' => $array,
+            'response_json' => $array,
+        ]);
         }
 
-        return response()->json([
-            'status' => 'sent',
-            'response_raw' => $response,
-            'response_json' => $responseData,
-        ]);
+        
     }
 
     // protected function makeCurlRequest($url, $requestJson)
