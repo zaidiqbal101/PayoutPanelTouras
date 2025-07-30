@@ -31,7 +31,7 @@ class TourasPayoutController extends Controller
             'org_name' => $request->org_name ?? '',
             'email_id' => $request->email_id ?? '',
             'mobile_no' => $request->mobile_no ?? '',
-            'me_id' => $request->me_id ?? 'AGEN5500134316',
+            'me_id' => $request->me_id ?? 'AGEN4430031130',
             'banks' => [
                 [
                     'account_no' => $request->account_no ?? '',
@@ -55,32 +55,36 @@ class TourasPayoutController extends Controller
         $key = 'b5QH4QP9rACLYLs0x+4DWnod27LmdD9V453AGVKCMOg=';
        
         $encryptedPayload = AESHelper::encrypt($nonEncryptedPayload, $key);
-        dd($encryptedPayload);
+        // dd($encryptedPayload);
 
         // Log::info('Add Beneficiary Encrypted Payload:', ['payload' => $encryptedPayload]);
 
         $requestJson = [
             'payload' => $encryptedPayload,
-            'uId' => $request->me_id ?? 'AGEN4430031130 ',
-            // 'iv' => '0123456789abcdef',
+            // 'uId' => $request->me_id ?? 'AGEN4430031130',
+            'uId' => 'AGEN4430031130',
         ];
         // dd($requestJson);
 
         $response = $this->makeCurlRequest($url, $requestJson);
-        dd($response);
+        
+        // $responseData['responseData'] = 'qbV8/7PGlffOIYkSlNB26o17iD4pJxqthM+BzbecLhn4A7gzZN3EIkLAxJ40kwZLNjl3BQu9qYcz5N2bwz+ygO3ni/XnNbP40ok//Mm7iZP4JCHDMIGzvAPDe0Ox+mWOBp0bo41HslfctsJjoMTf/fmF1DS9iGgjy3aRr0BmuWwaZRCD81TU5lJaxoBJKF9AbVrkjYbb1jjW4QPUZ/5HMb0yDdPQEIuVQCSeFCOvUJQ8wNfnZXcqg/6jXewjKjEtP317RX0UY33jB/ExfiTrqERxQ1IfC8qvv5dX3sQxl5ACIz1UieLgM19viLBg7SgYt7vKTzUG69DcJ3bgo79/KQ\u003d\u003d';
 
-        if (isset($response['error'])) {
-            Log::error('cURL Error in addBeneficiary:', ['error' => $response['error']]);
-            return response()->json(['error' => $response['error']], 500);
+        if (isset($response['errorMessage'])) {
+            Log::error('cURL Error in addBeneficiary:', ['error' => $response['errorMessage']]);
+            return response()->json(['error' => $response['errorMessage']]);
         }
 
         // $responseData = json_decode($response, true);
         // $responseData['responseData'] ='yEszeCGTQYOS60G2yL0iIy7+gNoCxmagIVcpaALwYMM0IW6pgfvL717s/rzXG4ej6Hr08Zv2LR4eX4W/pnMV/KTEtocSVrOHbp6IP92B2ZupYWwAeYCXAGWd8a1tAI/jntyNtmnF91PIaiIJuscfmCM4gRGiKWcnAioys+eOijHswyu+b1ukztjjS2rxLH/Fy/dqDJS946g3Fv31OC3e7zlXbyFT4YASotp9OhwJTfWtwaJYsA2hw9eTY8/hBEV8gx53TvNnr6Upj1ir/EobS+nLcsNgDWzxcQmh8+NaTXoWo3bk/hAiW3FgZQ6uc4/5hGt8NWnkJ25KmiIwO1f8BIE0vWZn9zWO+xnn8yYWugWo5m7wiWYbSa2hN28uGw/JKoIA6IneqqxpY8Drqsr1kpKNZewFPmzbhmxMM1taE08Dqts/LZ8yZXeynANtN64bKwSNnFbedTOeoXr6PB3mXNY9KfKYPikOjUgdZytUMpnJWm3rcevEq7TfTE+c3EoJvC2yKAiizdzgblTgJBaX6MOYIKw3Tyh0HPs7Nf8qT9AI6Z6g4nKuYB093M8Is37CYgprbSeEayDnzg3qJVglVcp1sH7sSLJr8WxyIpqXAjItpsYmU71slEVoH2XWdn/ZGF2AZqsHYiac42qRuWw4spjr9DYkAXM98N7O55sEXHYbKGlu6a465Qv+um0r0rhP5xMYaxeUa5FPYukLO2MO3W8gNpOGq4TPghpcylVsLeLGoq9Ee2so65T5uT2xLGQ2N6AejArBN9QZZeV/9KVh2mR6kNGDIbNJx6CKyVIAN9bDbxHoXpqi04ea+Z5RwCpjTC/Q/kLZZiPVer/onda6SgZyyFf1lmhh3g0sWRiiA6NGjNH5nrJnMlgMrMNvRtngOAF81Tp5xbE7Gf1qjjUqhbRzaYOZCPXDkEfSMSc5zlGJYrsoui0/1oAKn0l4cgiZDI+6SpTB/yAWX97/ipkJuZDI6TYNRcUxcWFcLDZ9dBUXyeJNx0uC0BtaN+fuR6zS68H6bFn5u73WNNgoaNOHdjrIE1j4T/VLgXQSwK71PXlIwdAQfqf/9YllCVGarNgA+xZEUu23Ar7i8RScFOjHPhMrcCapZbSzXJn29d9XBEHNWcS4iFwKYOehK7LwBmGgIVe8kf9vcoWqQ7RFLYgh4aYKuxuJWq8BTzJ2H376reYRyH0wrFjQG4ixcHbdLLkegPICAoiBbBVffjsBHGYoIJII0zq0UaHVA5Us4FhbqcvoY7P9IzBV7T5ncdQ6kQCipW+gdZPdn572b4TCDm38BQ==';
 
-        if (isset($responseData['responseData'])) {
-            $decryptedResponse = AESHelper::decrypt($responseData['responseData'], $this->key, $this->iv);
-            $responseData['decrypted_response'] = $decryptedResponse === "Error" ? null : $decryptedResponse;
-            Log::info('Add Beneficiary Decrypted Response:', ['decrypted_response' => $responseData['decrypted_response']]);
+        if (isset($response['responseData']) || isset($response['userMessage'])) {
+            dd($response);
+            $decryptedResponse = AESHelper::decrypt($responseData['responseData'], $key);
+            $array = json_decode($decryptedResponse, true);
+            dd($array);
+            // $responseData['decrypted_response'] = $decryptedResponse === "Error" ? null : $decryptedResponse;
+            // Log::info('Add Beneficiary Decrypted Response:', ['decrypted_response' => $responseData['decrypted_response']]);
         }
 
         return response()->json([
@@ -329,6 +333,7 @@ class TourasPayoutController extends Controller
         ]);
 
         $response = curl_exec($ch);
+        // dd($response);
 
         if (curl_errno($ch)) {
             $error = curl_error($ch);

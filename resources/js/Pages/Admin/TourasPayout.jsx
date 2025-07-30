@@ -7,12 +7,12 @@ const TourasPayout = () => {
   const [activeTab, setActiveTab] = useState('addBeneficiary');
   const [form, setForm] = useState({
     addBeneficiary: {
-      contact_type: 'Vendor',
+      contact_type: '',
       name: '',
       org_name: '',
       email_id: '',
       mobile_no: '',
-      me_id: 'AGEN5500134316',
+      me_id: 'AGEN4430031130',
       account_no: '',
       ifsc_code: '',
       account_holder_name: '',
@@ -62,7 +62,13 @@ const TourasPayout = () => {
       count: 0,
     },
   });
-  const [response, setResponse] = useState(null);
+  // const [response, setResponse] = useState(null);
+  const [responses, setResponses] = useState({
+    addBeneficiary: null,
+    payoutWithBene: null,
+    getBeneList: null,
+    payoutWithoutBene: null,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e, section) => {
@@ -79,7 +85,15 @@ const TourasPayout = () => {
 
     try {
       const res = await axios.post(`/touras/${endpoint}`, form[section]);
-      setResponse(res.data);
+      if (res.data.error) {
+          setResponse({ error: res.data.error });
+        } else {
+          setResponse({
+            raw: res.data.response_raw,
+            json: res.data.response_json,
+          });
+        }
+
     } catch (error) {
       setResponse({ error: error.message });
     } finally {
@@ -107,16 +121,57 @@ const TourasPayout = () => {
     </div>
   );
 
-  const renderResponse = () => (
-    response && (
-      <div className="mt-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
-        {/* <h3 className="text-lg font-semibold text-gray-800 mb-3">Response</h3>
-        <pre className="text-sm text-gray-700 bg-white p-4 rounded-md overflow-auto max-h-64">
-          {JSON.stringify(response, null, 2)}
-        </pre> */}
+    const renderResponse = () => {
+    const response = responses[activeTab];
+    if (!response) return null;
+
+    const { error } = response;
+    const json = response.json || {};
+    const raw = response.raw || {};
+
+    const beneList = json.beneList || raw.beneList || [];
+
+    return (
+      <div className="mt-6 bg-white border border-gray-200 p-5 rounded shadow">
+        {error && <p className="text-red-600 font-semibold">❌ {error}</p>}
+        {json.userMessage && (
+          <p className="text-green-600 font-semibold mb-4">✅ {json.userMessage}</p>
+        )}
+
+        {/* Bene List Display Only if Current Tab is "getBeneList" */}
+        {activeTab === 'getBeneList' && beneList.length > 0 && (
+          <>
+            <h3 className="text-md font-bold text-gray-800 mb-2">Beneficiary List</h3>
+            <ul className="space-y-2 max-h-64 overflow-y-auto">
+              {beneList.map((bene, index) => (
+                <li key={bene.beneId || index} className="bg-gray-100 p-4 rounded shadow">
+                  <p><strong>Name:</strong> {bene.name || bene.beneName}</p>
+                  <p><strong>Account No:</strong> {bene.accountNo}</p>
+                  <p><strong>IFSC:</strong> {bene.ifscCode}</p>
+                  <p><strong>Mobile:</strong> {bene.mobileNo}</p>
+                  <p><strong>Email:</strong> {bene.emailId}</p>
+                  <p><strong>Status:</strong> {bene.beneStatus}</p>
+                  <p><strong>Added On:</strong> {bene.CreationDate}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {/* Default for non-list responses */}
+        {activeTab !== 'getBeneList' && (
+          <pre className="text-sm text-gray-800 bg-gray-50 p-3 rounded overflow-auto max-h-64">
+            {JSON.stringify(json, null, 2)}
+          </pre>
+        )}
       </div>
-    )
-  );
+    );
+  };
+
+
+
+
+
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -241,11 +296,11 @@ const TourasPayout = () => {
               </button>
 
               {/* 👇 Display bene list if available */}
-              {response?.response_raw?.beneList && (
+              {responses.getBeneList?.response_raw?.beneList && (
                 <div className="mt-6">
                   <h3 className="text-md font-bold text-gray-800 mb-2">Beneficiary List</h3>
                   <ul className="space-y-2 max-h-64 overflow-y-auto">
-                    {response.response_raw.beneList.map((bene, index) => (
+                    {responses.getBeneList.response_raw.beneList.map((bene, index) => (
                       <li key={bene.beneId || index} className="bg-gray-100 p-4 rounded shadow">
                         <p><strong>Name:</strong> {bene.name}</p>
                         <p><strong>Account No:</strong> {bene.accountNo}</p>
@@ -259,6 +314,7 @@ const TourasPayout = () => {
                   </ul>
                 </div>
               )}
+
             </form>
           )}
 
